@@ -1,0 +1,39 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+
+
+const app = express();
+const port = 3000;
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname + '/public'));
+
+
+app.get("/", function(req, res){
+  res.sendFile(__dirname+"/bmiCalculator.html");
+})
+
+app.post("/", function(req, res){
+
+  var num1 = Number(req.body.weight);
+  var num2 = Number(req.body.height);
+  res.send("A secret formula was used and ... "+bmiCalculator(num1, num2));
+});
+
+
+function bmiCalculator(weight,height){
+      var BMI=Math.round(weight/(height*height));
+   if (BMI<18.5) {
+        return("Your BMI is "+BMI+", so you are underweight.");
+}
+  if (BMI>=18.5 && BMI <= 24.9) {
+        return("Your BMI is "+BMI+", so you have a normal weight.");
+}
+  if (BMI>24.9) {
+        return("Your BMI is "+BMI+", so you are overweight.");
+      }
+}
+
+
+app.listen(process.env.PORT || port, function(){
+  console.log("The server is started on port 3000.");
+});

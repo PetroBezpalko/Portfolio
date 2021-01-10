@@ -1,0 +1,68 @@
+const express=require("express");
+const bodyParser=require("body-parser");
+const request=("request");
+const https=require("https");
+
+const app=express();
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static("public"));
+
+//Getting data from our form.
+app.get("/", function(req, res){
+  res.sendFile(__dirname+"/signup.html");
+});
+
+app.post("/", function(req, res){
+
+  const fn=req.body.fn;
+  const ln=req.body.ln;
+  const e=req.body.e;
+
+  const data={
+    members:[
+        {
+          email_address:e,
+          status:"subscribed",
+          merge_fields:{
+            FNAME:fn,
+            LNAME:ln
+          }
+
+        }
+    ]
+  };
+const jsonData = JSON.stringify(data);
+//Preparing everything for https(POST) request.
+const url="https://us7.api.mailchimp.com/3.0/lists/df84329ac2";
+const options={
+  method:"POST",
+  auth:"petro:b754cf0ade21792ac69fdfa92852bf51-us7"
+}
+// Creating https(POST) request.
+                // https.request(url, options, callback)-in options we can
+                 // specify the method.Default is GET, but we need POST.
+const request = https.request(url, options, function(response){
+  if (response.statusCode === 200){
+    res.sendFile(__dirname+"/success.html");
+  }else{
+    res.sendFile(__dirname+"/failure.html")
+  }
+  response.on("data", function(data){//checks what data we get sent back from mailchimp.
+    const dataBack=JSON.parse(data);
+    // console.log(dataBack);
+  })
+
+})
+// Using the request that we created above to send data to mailchimp.
+request.write(jsonData);//sends data(jsonData) to mailchimp.
+request.end();//indicates that we have finished with our request.
+});
+
+app.post("/failure", function(req, res){
+  res.redirect("/");
+});
+
+
+app.listen(process.env.PORT || 3000, function(){
+  console.log("The server is running on port 3000.");
+});
