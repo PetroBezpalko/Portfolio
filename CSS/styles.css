@@ -55,6 +55,14 @@ h4, h5 {
   padding-bottom: 1rem;
 }
 
+.achievements {
+  padding: 2% 5%;
+}
+.achievements img {
+  max-width: 300px;
+  height: auto;
+}
+
 .imageDiv{
   padding: 1rem;
 }
